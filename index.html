@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.6">
+    <title>FYT - Платформа для отбора молодых спортсменов в москве</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #ffffff, #e6f2ff);
+        }
+        .navbar {
+            background: #1e3a8a;
+        }
+        .navbar-brand {
+            color: white;
+            font-weight: bold;
+        }
+        .hero {
+            background: linear-gradient(90deg, #1e3a8a, #dc2626);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+        .section-title {
+            color: #1e3a8a;
+            border-left: 5px solid #dc2626;
+            padding-left: 15px;
+            margin: 30px 0;
+        }
+        .btn-primary {
+            background-color: #1e3a8a;
+            border-color: #1e3a8a;
+        }
+        .btn-danger {
+            background-color: #dc2626;
+            border-color: #dc2626;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .chat-window {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+        .message {
+            padding: 8px;
+            margin: 5px;
+            border-radius: 10px;
+            max-width: 70%;
+        }
+        .message.sent {
+            background-color: #1e3a8a;
+            color: white;
+            margin-left: auto;
+        }
+        .message.received {
+            background-color: #e5e5ea;
+            color: black;
+        }
+        .badge-sport {
+            background-color: #dc2626;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+        .filter-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid #dee2e6;
+        }
+        .filter-title {
+            color: #1e3a8a;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .filter-group {
+            margin-bottom: 15px;
+        }
+        .filter-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .age-btn {
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        .sport-btn {
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+            font-size: 1.2rem;
+            display: none;
+        }
+        .active-filter {
+            background-color: #1e3a8a !important;
+            color: white !important;
+        }
+        .reset-btn {
+            margin-top: 10px;
+        }
+        .athlete-card {
+            display: block;
+        }
+        .athlete-card.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                FYT
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="#home">Главная</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#register">Регистрация</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#cabinet">Личный кабинет</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#athletes">Спортсмены</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#chat">Чат</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Главная -->
+    <section id="home" class="hero">
+        <div class="container">
+            <h1 class="display-4">FYT</h1>
+            <p class="lead">Платформа для поиска и продвижения юных спортивных талантов по Москве</p>
+            <p>Соединяем специалистов и спортсменов из различных районов Москвы. Без рейтингов, только реальные достижения.</p>
+            <a href="#register" class="btn btn-light btn-lg">Начать сейчас</a>
+        </div>
+    </section>
+
+    <!-- Регистрация -->
+    <section id="register" class="container py-5">
+        <h2 class="section-title">Регистрация</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Я спортсмен</h4>
+                        <p>Зарегистрируйтесь, чтобы показать себя скаутам</p>
+                        <form id="athleteForm">
+                            <input type="text" class="form-control mb-2" placeholder="Имя" required>
+                            <input type="number" class="form-control mb-2" placeholder="Возраст" required>
+                            <input type="text" class="form-control mb-2" placeholder="Вид спорта" required>
+                            <input type="text" class="form-control mb-2" placeholder="Город" required>
+                            <input type="email" class="form-control mb-2" placeholder="Email" required>
+                            <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Я специалист</h4>
+                        <p>Зарегистрируйтесь для поиска талантов</p>
+                        <form id="scoutForm">
+                            <input type="text" class="form-control mb-2" placeholder="Имя" required>
+                            <input type="text" class="form-control mb-2" placeholder="Организация" required>
+                            <input type="email" class="form-control mb-2" placeholder="Email" required>
+                            <input type="password" class="form-control mb-2" placeholder="Пароль" required>
+                            <button type="submit" class="btn btn-danger">Зарегистрироваться</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Личный кабинет -->
+    <section id="cabinet" class="container py-5">
+        <h2 class="section-title">Личный кабинет</h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h4>Профиль</h4>
+                        <p><strong>ФИО:</strong> Лебедев Сергей Иванович</p>
+                        <p><strong>Тип:</strong> Спортсмен</p>
+                        <p><strong>Возраст:</strong> 16 лет</p>
+                        <p><strong>Вид спорта:</strong> Футбол</p>
+                        <p><strong>Город:</strong> Москва</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h4>Мои достижения</h4>
+                        <p>Загрузите грамоты, дипломы, видео выступлений</p>
+                        <div class="mb-3">
+                            <label class="form-label">Выберите файлы:</label>
+                            <input type="file" class="form-control" multiple>
+                        </div>
+                        <div class="alert alert-info">
+                            <h6>Уже загружено:</h6>
+                            <ul>
+                                <li>Диплом чемпиона школы 2024.jpg</li>
+                                <li>Видео тренировки (февраль 2025).mp4</li>
+                                <li>Грамота за 1 место на городских соревнованиях.pdf</li>
+                            </ul>
+                        </div>
+                        <button class="btn btn-primary">Загрузить ещё</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- База спортсменов -->
+    <section id="athletes" class="container py-5">
+        <h2 class="section-title">База спортсменов</h2>
+        
+        <!-- Фильтры -->
+        <div class="filter-section">
+            <h5 class="filter-title">Фильтры</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="filter-group">
+                        <span class="filter-label">Возраст:</span>
+                        <div class="age-filter">
+                            <button class="btn btn-outline-primary btn-sm age-btn" data-age="15">15 лет</button>
+                            <button class="btn btn-outline-primary btn-sm age-btn" data-age="16">16 лет</button>
+                            <button class="btn btn-outline-primary btn-sm age-btn" data-age="17">17 лет</button>
+                            <button class="btn btn-outline-primary btn-sm age-btn" data-age="18">18 лет</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="filter-group">
+                        <span class="filter-label">Вид спорта:</span>
+                        <div class="sport-filter">
+                            <button class="btn btn-outline-danger btn-sm sport-btn" data-sport="Футбол">Футбол</button>
+                            <button class="btn btn-outline-danger btn-sm sport-btn" data-sport="Плавание">Плавание</button>
+                            <button class="btn btn-outline-danger btn-sm sport-btn" data-sport="Баскетбол">Баскетбол</button>
+                            <button class="btn btn-outline-danger btn-sm sport-btn" data-sport="Теннис">Теннис</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="selected-filters mt-3">
+                        <small class="text-muted">Выбрано: <span id="selectedFilters">Нет фильтров</span></small>
+                    </div>
+                    <button class="btn btn-secondary btn-sm reset-btn" id="resetFilters">
+                        Сбросить фильтры
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Список спортсменов -->
+        <div class="row" id="athletesList">
+            <!-- Спортсмен 1 -->
+            <div class="col-md-4 athlete-card" data-age="16" data-sport="Футбол">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Алексей Петров</h5>
+                        <p><span class="badge-sport">Футбол</span></p>
+                        <p><strong>Возраст:</strong> 16 лет</p>
+                        <p><strong>Город:</strong> Москва Дорогомилово</p>
+                        <p><strong>Достижения:</strong> Чемпион школы 2024</p>
+                        <button class="btn btn-sm btn-primary open-chat" data-name="Алексей Петров">Написать</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Спортсмен 2 -->
+            <div class="col-md-4 athlete-card" data-age="15" data-sport="Плавание">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Мария Сидорова</h5>
+                        <p><span class="badge-sport">Плавание</span></p>
+                        <p><strong>Возраст:</strong> 15 лет</p>
+                        <p><strong>Город, район:</strong> Москва Раменки</p>
+                        <p><strong>Достижения:</strong> 1 место на региональных соревнованиях</p>
+                        <button class="btn btn-sm btn-primary open-chat" data-name="Мария Сидорова">Написать</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Спортсмен 3 -->
+            <div class="col-md-4 athlete-card" data-age="17" data-sport="Баскетбол">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Дмитрий Козлов</h5>
+                        <p><span class="badge-sport">Баскетбол</span></p>
+                        <p><strong>Возраст:</strong> 17 лет</p>
+                        <p><strong>Город:</strong> Москва Дорогомилово</p>
+                        <p><strong>Достижения:</strong> MVP школьной лиги</p>
+                        <button class="btn btn-sm btn-primary open-chat" data-name="Дмитрий Козлов">Написать</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Спортсмен 4 -->
+            <div class="col-md-4 athlete-card" data-age="16" data-sport="Футбол">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Иван Смирнов</h5>
+                        <p><span class="badge-sport">Футбол</span></p>
+                        <p><strong>Возраст:</strong> 16 лет</p>
+                        <p><strong>Город:</strong> Москва Фили-Давыдково</p>
+                        <p><strong>Достижения:</strong> Лучший бомбардир районных соревнований</p>
+                        <button class="btn btn-sm btn-primary open-chat" data-name="Иван Смирнов">Написать</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Спортсмен 5 -->
+            <div class="col-md-4 athlete-card" data-age="15" data-sport="Теннис">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Анна Кузнецова</h5>
+                        <p><span class="badge-sport">Теннис</span></p>
+                        <p><strong>Возраст:</strong> 15 лет</p>
+                        <p><strong>Город:</strong> Москва Строгино</p>
+                        <p><strong>Достижения:</strong> Победитель юношеского турнира</p>
+                        <button class="btn btn-sm btn-primary open-chat" data-name="Анна Кузнецова">Написать</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Спортсмен 6 -->
+            <div class="col-md-4 athlete-card" data-age="18" data-sport="Баскетбол">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Артем Васильев</h5>
+                        <p><span class="badge-sport">Баскетбол</span></p>
+                        <p><strong>Возраст:</strong> 18 лет</p>
+                        <p><strong>Город:</strong> Москва Медведково</p>
+                        <p><strong>Достижения:</strong> Капитан школьной команды</p>
+                        <button class="btn btn-sm btn-primary open-chat" data-name="Артем Васильев">Написать</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Сообщение, если нет результатов -->
+        <div class="no-results" id="noResults">
+            <h5>Спортсмены не найдены</h5>
+            <p>Попробуйте изменить параметры фильтрации</p>
+        </div>
+    </section>
+
+    <!-- Чат -->
+    <section id="chat" class="container py-5">
+        <h2 class="section-title">Чат с <span id="chat-with">Алексей Петров</span></h2>
+        <div class="chat-window" id="chatWindow">
+            <div class="message received">
+                <strong>Алексей Петров:</strong> Здравствуйте! Я готов к просмотру. Могу прислать свежие видео тренировок.
+            </div>
+            <div class="message sent">
+                <strong>Вы:</strong> Привет! Пришлите, пожалуйста, видео последних матчей.
+            </div>
+        </div>
+        <div class="input-group mt-3">
+            <input type="text" id="messageInput" class="form-control" placeholder="Введите сообщение...">
+            <button class="btn btn-primary" id="sendMessage">Отправить</button>
+        </div>
+    </section>
+
+    <!-- Подвал -->
+    <footer class="bg-dark text-white text-center py-4 mt-5">
+        <div class="container">
+            <p>FYT - проект учеников 10М класса, школы №67, Москва 2025</p>
+            <p>Гудовский Кирилл, Сараев Фёдор, Будков Роман</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Фильтрация спортсменов
+        const athletesData = [
+            { name: "Алексей Петров", age: 16, sport: "Футбол" },
+            { name: "Мария Сидорова", age: 15, sport: "Плавание" },
+            { name: "Дмитрий Козлов", age: 17, sport: "Баскетбол" },
+            { name: "Иван Смирнов", age: 16, sport: "Футбол" },
+            { name: "Анна Кузнецова", age: 15, sport: "Теннис" },
+            { name: "Артем Васильев", age: 18, sport: "Баскетбол" }
+        ];
+
+        let selectedAges = [];
+        let selectedSports = [];
+
+        // Инициализация фильтров
+        document.querySelectorAll('.age-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const age = parseInt(this.getAttribute('data-age'));
+                toggleFilter(age, selectedAges, this);
+                filterAthletes();
+            });
+        });
+
+        document.querySelectorAll('.sport-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const sport = this.getAttribute('data-sport');
+                toggleFilter(sport, selectedSports, this);
+                filterAthletes();
+            });
+        });
+
+        // Сброс фильтров
+        document.getElementById('resetFilters').addEventListener('click', function() {
+            resetFilters();
+        });
+
+        // Функция переключения фильтра
+        function toggleFilter(value, filterArray, element) {
+            const index = filterArray.indexOf(value);
+            if (index === -1) {
+                filterArray.push(value);
+                element.classList.add('active-filter');
+            } else {
+                filterArray.splice(index, 1);
+                element.classList.remove('active-filter');
+            }
+            updateSelectedFiltersText();
+        }
+
+        // Функция фильтрации спортсменов
+        function filterAthletes() {
+            const athleteCards = document.querySelectorAll('.athlete-card');
+            let visibleCount = 0;
+
+            athleteCards.forEach(card => {
+                const age = parseInt(card.getAttribute('data-age'));
+                const sport = card.getAttribute('data-sport');
+                
+                const ageMatch = selectedAges.length === 0 || selectedAges.includes(age);
+                const sportMatch = selectedSports.length === 0 || selectedSports.includes(sport);
+                
+                if (ageMatch && sportMatch) {
+                    card.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            // Показать/скрыть сообщение "нет результатов"
+            const noResults = document.getElementById('noResults');
+            if (visibleCount === 0) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+        }
+
+        // Обновление текста выбранных фильтров
+        function updateSelectedFiltersText() {
+            const filtersText = [];
+            
+            if (selectedAges.length > 0) {
+                const ages = selectedAges.sort((a, b) => a - b).map(age => `${age} лет`);
+                filtersText.push(`Возраст: ${ages.join(', ')}`);
+            }
+            
+            if (selectedSports.length > 0) {
+                filtersText.push(`Спорт: ${selectedSports.join(', ')}`);
+            }
+            
+            const selectedFiltersElement = document.getElementById('selectedFilters');
+            if (filtersText.length > 0) {
+                selectedFiltersElement.textContent = filtersText.join('; ');
+            } else {
+                selectedFiltersElement.textContent = 'Нет фильтров';
+            }
+        }
+
+        // Сброс всех фильтров
+        function resetFilters() {
+            selectedAges = [];
+            selectedSports = [];
+            
+            document.querySelectorAll('.age-btn, .sport-btn').forEach(btn => {
+                btn.classList.remove('active-filter');
+            });
+            
+            updateSelectedFiltersText();
+            filterAthletes();
+        }
+
+        // Простая регистрация
+        document.getElementById('athleteForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Вы успешно зарегистрированы как спортсмен! Теперь вы можете заполнить профиль и загрузить достижения.');
+        });
+
+        document.getElementById('scoutForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Вы успешно зарегистрированы как скаут! Теперь вы можете просматривать анкеты спортсменов.');
+        });
+
+        // Чат
+        const chatWindow = document.getElementById('chatWindow');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendMessage');
+        const chatWith = document.getElementById('chat-with');
+
+        document.querySelectorAll('.open-chat').forEach(button => {
+            button.addEventListener('click', function() {
+                const name = this.getAttribute('data-name');
+                chatWith.textContent = name;
+                chatWindow.innerHTML = `
+                    <div class="message received">
+                        <strong>${name}:</strong> Здравствуйте! Я готов к общению.
+                    </div>
+                `;
+                messageInput.focus();
+            });
+        });
+
+        sendButton.addEventListener('click', function() {
+            const msg = messageInput.value.trim();
+            if (msg) {
+                // Сообщение от пользователя
+                const div = document.createElement('div');
+                div.className = 'message sent';
+                div.innerHTML = `<strong>Вы:</strong> ${msg}`;
+                chatWindow.appendChild(div);
+                messageInput.value = '';
+
+                // Автоответ через 1 секунду
+                setTimeout(() => {
+                    const auto = document.createElement('div');
+                    auto.className = 'message received';
+                    auto.innerHTML = `<strong>${chatWith.textContent}:</strong> Спасибо за сообщение! Я отвечу в ближайшее время.`;
+                    chatWindow.appendChild(auto);
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                }, 1000);
+                
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }
+        });
+
+        // Отправка по Enter
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendButton.click();
+            }
+        });
+    </script>
+</body>
+</html>
